@@ -32,6 +32,30 @@ function resultProc(req, result, resParam) {
         case 'Renew Failed':
             apiError('RENEW_FAILED');
             break;
+        case 'Added Succeed':
+            apiReturn('ADDED_SUCCEED');
+            break;
+        case 'Already In Favorite':
+            apiReturn('ALREADY_IN_FAVORITE');
+            break;
+        case 'Added Failed':
+            apiError('ADDED_FAILED');
+            break;
+        case 'Deleted Succeed':
+            apiReturn('DELETED_SUCCEED');
+            break;
+        case 'Deleted Failed':
+            apiError('DELETED_FAILED');
+            break;
+        case 'Out Of Range':
+            apiError('OUT_OF_RANGE');
+            break;
+        case 'Session Invalid':
+            apiError('SESSION_INVALID');
+            break;
+        case 'No Info':
+            apiError('NO_INFO');
+            break;
         default:
             apiReturn(result);
             break;
@@ -39,6 +63,7 @@ function resultProc(req, result, resParam) {
 }
 
 function apiError(err) {
+    uniResult.Result = false;
     uniResult.Detail = err;
     returnJSON(res);
 }
@@ -50,7 +75,6 @@ function apiReturn(content) {
 }
 
 function returnJSON() {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     var returnStr;
     if (callbackHeader != '' && callbackHeader) {
         returnStr = callbackHeader + "(" + JSON.stringify(uniResult) + ")";
@@ -58,7 +82,12 @@ function returnJSON() {
     else {
         returnStr = JSON.stringify(uniResult);
     }
-    res.end(returnStr);
+
+    if (!res._header) {
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.send(returnStr);
+    }
+    return;
 }
 
 module.exports.resultProc = resultProc;

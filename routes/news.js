@@ -6,17 +6,21 @@ var router = express.Router();
 var parsers = require('../modules/parsers');
 
 var getNewsAnnounceList = require('../modules/news/getNewsAnnounceList');
+var getNewAnnounceDetail = require('../modules/news/getNewsAnnounceDetail');
 
-router.use('/getAnnounceList', function (req, res) {
-    var page = req.param('page');
-    getNewsAnnounceList('announce', page, function (result) {
+router.use('/getList/:type/:page', function (req, res) {
+    var page = req.param('page', 1);
+    var type = req.param('type', 'announce');
+    getNewsAnnounceList(type, page, function (result) {
         parsers.resultProc(req, result, res);
     });
 });
 
-router.use('/getNewsList', function (req, res) {
-    var page = req.param('page');
-    getNewsAnnounceList('news', page, function (result) {
+router.use('/getDetail/:type/:format/:id', function (req, res) {
+    var id = req.param('id');
+    var format = req.param('format', 'html');
+    var type = req.param('type', 'announce');
+    getNewAnnounceDetail(type, format, id, function (result) {
         parsers.resultProc(req, result, res);
     });
 });

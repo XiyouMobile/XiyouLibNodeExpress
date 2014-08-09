@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var users = require('./routes/user');
 var books = require('./routes/book');
 var news = require('./routes/news');
+var others=require('./routes/other');
 
 var app = express();
 
@@ -26,6 +27,7 @@ app.use(cookieParser());
 app.use('/user', users);
 app.use('/book', books);
 app.use('/news', news);
+app.use('/other',others);
 
 var uniResult = {
     Result: false,
@@ -34,7 +36,6 @@ var uniResult = {
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     uniResult.Detail = 'NOT_FOUND';
     res.end(JSON.stringify(uniResult));
 });
@@ -56,7 +57,6 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     uniResult.Detail = err.message;
     res.end(JSON.stringify(uniResult));
 });

@@ -6,8 +6,14 @@ var cheerio = require('cheerio');
 var iconv = require('iconv-lite');
 
 function userInfo(session, callback) {
-    if(session=='' || session==null){
+    if (session == '' || session == null) {
         callback('Not Login');
+        return;
+    } else if (session.length != 0) {
+        if (session[0] == '') {
+            callback('Not Login');
+            return;
+        }
     }
     request
     (
@@ -20,10 +26,16 @@ function userInfo(session, callback) {
         }, function (err, res, body) {
             if (err) {
                 callback(err);
+                return;
             }
             var rawHtml = iconv.decode(body, 'GB2312');
 
             var $ = cheerio.load(rawHtml);
+
+            if($('body').text().trim()==''){
+                callback('Session Invalid');
+                return;
+            }
 
             var infoTable = $('table[width=600]');
 
@@ -54,6 +66,7 @@ function userInfo(session, callback) {
 
             //console.log(userInfo);
             callback(userInfo);
+            return;
         }
     )
 };

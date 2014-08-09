@@ -10,6 +10,12 @@ var session;
 function doRenew(session, bookInfo, callback) {
     if (session == '' || session == null) {
         callback('Not Login');
+        return;
+    } else if (session.length != 0) {
+        if (session[0] == '') {
+            callback('Not Login');
+            return;
+        }
     }
     request
     (
@@ -18,7 +24,8 @@ function doRenew(session, bookInfo, callback) {
             method: 'POST',
             encoding: null,
             headers: {
-                ContentType: 'application/x-www-form-urlencoded'
+                ContentType: 'application/x-www-form-urlencoded',
+                Cookie: session
             },
             form: {
                 'action': 'Renew',
@@ -29,6 +36,7 @@ function doRenew(session, bookInfo, callback) {
         }, function (err, res, body) {
             if (err) {
                 callback(err);
+                return;
             }
 
             var rawHtml = iconv.decode(body, 'GBK');
@@ -37,11 +45,13 @@ function doRenew(session, bookInfo, callback) {
             var temp = $('#my_lib_jieyue').next();
             var alertStr = temp[0].children[0].data.trim();
             alertStr = alertStr.substr(7, alertStr.length - 10);
-            if (alertStr.search('续借失败')) {
+            if (alertStr.indexOf('续借失败') != -1) {
                 callback('Renew Failed');
-            } else if (alertStr.search('续借成功')) {
+                return;
+            } else if (alertStr.indexOf('续借成功') != -1) {
                 var date = alertStr.substr(alertStr.length - 10).replace(/\//g, '-');
                 callback(date);
+                return;
             }
         }
     );
